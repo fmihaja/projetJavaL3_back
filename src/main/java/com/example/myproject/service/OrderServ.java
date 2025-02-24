@@ -15,9 +15,6 @@ public class OrderServ {
     @Autowired
     private OrderRepo orderRepository;
 
-    // @Autowired
-    // private ClientRepo clientRepository;
-
     public List<Order> findAll() {
         return orderRepository.findAll();
     }
@@ -30,8 +27,20 @@ public class OrderServ {
         return orderRepository.save(order);
     }
 
-    public void deleteById(String orderId) {
-        orderRepository.deleteById(orderId);
+    public Order updateOrder(Order order) {
+        if (orderRepository.existsById(order.getOrderId().toString())) {
+            return orderRepository.save(order);
+        } else {
+            return null;
+        }
     }
 
+    public boolean deleteOrder(String orderId) {
+        if (orderRepository.existsById(orderId)) {
+            orderRepository.deleteById(orderId);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
