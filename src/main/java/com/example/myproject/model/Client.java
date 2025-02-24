@@ -12,9 +12,11 @@ import lombok.NoArgsConstructor; // Import de l'annotation Lombok
 
 @Entity
 @Table(name = "clients")
+
 @Data
 @NoArgsConstructor 
 @AllArgsConstructor 
+
 public class Client {
 
     @Id
