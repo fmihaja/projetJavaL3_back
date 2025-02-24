@@ -10,13 +10,12 @@ import lombok.AllArgsConstructor; // Import de l'annotation Lombok
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Entity
+@Table(name = "users")
+
 @Data
 @NoArgsConstructor 
 @AllArgsConstructor 
-
-
-@Entity
-@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +26,5 @@ public class User {
     private String name;
 
     @Column(unique = true, nullable = false)
-    // @NotEmpty(message = "L'email ne peut pas être vide")
-    // @Email(message = "Le format de l'email n'est pas valide")
     private String email;
 }
