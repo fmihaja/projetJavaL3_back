@@ -12,7 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")  // Appliquer CORS à toutes les routes
-                .allowedOrigins("*")  // Autoriser les requêtes depuis ce client
+                .allowedOrigins("http://localhost:4200","http://localhost:8080")  // Autoriser les requêtes depuis ce client
                 .allowedMethods("*") // Méthodes HTTP autorisées
                 .allowedHeaders("*") // Autoriser tous les headers
                 .allowCredentials(true); // Autoriser l’envoi de cookies ou d’en-têtes d’authentification
