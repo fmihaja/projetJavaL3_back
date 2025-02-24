@@ -26,7 +26,20 @@ public class ArticleServ {
         return articleRepo.save(article);
     }
 
-    public void deleteArticle(Long id) {
-        articleRepo.deleteById(id);
+    public Article updateArticle(Article article) {
+        if (articleRepo.existsById(article.getArticleId())) {
+            return articleRepo.save(article);
+        } else {
+            return null;
+        }
+    }
+
+    public boolean deleteArticle(Long id) {
+        if (articleRepo.existsById(id)) {
+            articleRepo.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
