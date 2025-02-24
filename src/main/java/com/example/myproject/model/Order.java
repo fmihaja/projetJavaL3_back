@@ -3,6 +3,7 @@ package com.example.myproject.model;
 import java.time.LocalDate;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,9 +31,9 @@ public class Order {
     @Column(nullable = false, columnDefinition = "DATE DEFAULT CURRENT_DATE")
     private LocalDate orderDate;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Client client;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Article> articles;
 }

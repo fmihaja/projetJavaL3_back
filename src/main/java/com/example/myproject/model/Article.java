@@ -2,6 +2,7 @@ package com.example.myproject.model;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,9 +32,9 @@ public class Article {
     @Column(nullable = false)
     private Long prix;
 
-    @ManyToMany(mappedBy = "articles")
+    @ManyToMany(mappedBy = "articles", cascade = CascadeType.ALL)
     private List<Order> orders;
 
-    @ManyToMany(mappedBy = "articles")
+    @ManyToMany(mappedBy = "articles", cascade = CascadeType.ALL)
     private List<Supplier> suppliers;
 }
