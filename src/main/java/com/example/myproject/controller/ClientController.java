@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.myproject.dto.ApiResponse;
+import com.example.myproject.dto.ClientDTO;
 import com.example.myproject.model.Client;
 import com.example.myproject.service.ClientServ;
-
 
 @RestController
 @RequestMapping("/api/clients/")
@@ -29,26 +29,25 @@ public class ClientController {
     @PostMapping
     public ResponseEntity<ApiResponse<Client>> createClient(@RequestBody Client client) {
         Client savedUser = clientService.createClient(client);
-        ApiResponse<Client> response=new ApiResponse<>("client crée.", savedUser);
+        ApiResponse<Client> response = new ApiResponse<>("client crée.", savedUser);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Client>>> getAllClient() {
-        List<Client> clients= clientService.getAllClient();
-        ApiResponse<List<Client>> response=new ApiResponse<>("liste des clients", clients);
+    public ResponseEntity<ApiResponse<List<ClientDTO>>> getAllClient() {
+        List<ClientDTO> clients = clientService.getAllClient();
+        ApiResponse<List<ClientDTO>> response = new ApiResponse<>("liste des clients", clients);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("{email}")
-    public ResponseEntity<ApiResponse<Optional<Client>>>  findClient(@PathVariable String email){
-        Optional<Client> client= clientService.findClient(email);
+    public ResponseEntity<ApiResponse<Optional<ClientDTO>>> findClient(@PathVariable String email) {
+        Optional<ClientDTO> client = clientService.findClient(email);
         if (client.isPresent()) {
-            ApiResponse<Optional<Client>> response = new ApiResponse<>("Client found", client);
+            ApiResponse<Optional<ClientDTO>> response = new ApiResponse<>("Client trouvé", client);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            ApiResponse<Optional<Client>> response = new ApiResponse<>("Client not found", Optional.empty());
+            ApiResponse<Optional<ClientDTO>> response = new ApiResponse<>("Client non trouvé", Optional.empty());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
