@@ -4,6 +4,8 @@ import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
@@ -19,15 +21,19 @@ import lombok.NoArgsConstructor;
 public class Article {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, length = 50)
-    private String articleId;
+    private Long articleId;
 
     @Column(nullable = false, length = 100)
     private String name;
 
     @Column(nullable = false)
-    private int prix;
+    private Long prix;
 
     @ManyToMany(mappedBy = "articles")
     private List<Order> orders;
+
+    @ManyToMany(mappedBy = "articles")
+    private List<Supplier> suppliers;
 }
