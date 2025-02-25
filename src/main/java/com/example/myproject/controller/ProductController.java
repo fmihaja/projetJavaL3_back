@@ -2,9 +2,11 @@ package com.example.myproject.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.myproject.dto.ApiResponse;
+import com.example.myproject.dto.ProductDTO;
+import com.example.myproject.dto.StockMovementDTO;
 import com.example.myproject.model.Product;
+import com.example.myproject.model.StockMovement;
 import com.example.myproject.service.ProductServ;
 
 @RestController
@@ -26,42 +31,53 @@ public class ProductController {
     private ProductServ productService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Product>>> getAllProducts() {
+    @Transactional(readOnly = true)
+    public ResponseEntity<ApiResponse<List<ProductDTO>>> getAllProducts() {
         List<Product> products = productService.findAll();
-        return ResponseEntity.ok(new ApiResponse<>("Products retrieved successfully", products));
+        List<ProductDTO> productDTOs = products.stream()
+                                               .map(this::toProductDTO)
+                                               .collect(Collectors.toList());
+        return ResponseEntity.ok(new ApiResponse<>("Products retrieved successfully", productDTOs));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Product>> getProductById(@PathVariable Long id) {
+    @GetMapping("{id}")
+    @Transactional(readOnly = true)
+    public ResponseEntity<ApiResponse<ProductDTO>> getProductById(@PathVariable Long id) {
         Optional<Product> product = productService.findById(id);
         if (product.isPresent()) {
-            return ResponseEntity.ok(new ApiResponse<>("Product retrieved successfully", product.get()));
+            ProductDTO productDTO = toProductDTO(product.get());
+            return ResponseEntity.ok(new ApiResponse<>("Product retrieved successfully", productDTO));
         } else {
             return ResponseEntity.status(404).body(new ApiResponse<>("Product not found", null));
         }
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Product>> createProduct(@RequestBody Product product) {
+    @Transactional
+    public ResponseEntity<ApiResponse<ProductDTO>> createProduct(@RequestBody Product product) {
         Product savedProduct = productService.save(product);
-        return ResponseEntity.status(201).body(new ApiResponse<>("Product created successfully", savedProduct));
+        ProductDTO productDTO = toProductDTO(savedProduct);
+        return ResponseEntity.status(201).body(new ApiResponse<>("Product created successfully", productDTO));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Product>> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
+    @PutMapping("{id}")
+    @Transactional
+    public ResponseEntity<ApiResponse<ProductDTO>> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
         Optional<Product> product = productService.findById(id);
         if (product.isPresent()) {
             Product updatedProduct = product.get();
             updatedProduct.setName(productDetails.getName());
             updatedProduct.setPrice(productDetails.getPrice());
             updatedProduct.setQuantite(productDetails.getQuantite());
-            return ResponseEntity.ok(new ApiResponse<>("Product updated successfully", productService.save(updatedProduct)));
+            ProductDTO productDTO = toProductDTO(productService.save(updatedProduct));
+            return ResponseEntity.ok(new ApiResponse<>("Product updated successfully", productDTO));
         } else {
             return ResponseEntity.status(404).body(new ApiResponse<>("Product not found", null));
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("{id}")
+    @Transactional
     public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable Long id) {
         if (productService.findById(id).isPresent()) {
             productService.deleteById(id);
@@ -69,5 +85,30 @@ public class ProductController {
         } else {
             return ResponseEntity.status(404).body(new ApiResponse<>("Product not found", null));
         }
+    }
+
+    private ProductDTO toProductDTO(Product product) {
+        // Force lazy loading of stockMovements
+        product.getStockMovements().size();
+        
+        List<StockMovementDTO> stockMovementDTOs = product.getStockMovements().stream()
+                .map(this::toStockMovementDTO)
+                .collect(Collectors.toList());
+        return new ProductDTO(
+            product.getId(),
+            product.getName(),
+            product.getPrice(),
+            product.getQuantite(),
+            stockMovementDTOs
+        );
+    }
+
+    private StockMovementDTO toStockMovementDTO(StockMovement stockMovement) {
+        return new StockMovementDTO(
+            stockMovement.getId(),
+            stockMovement.getDate(),
+            stockMovement.getType(),
+            stockMovement.getQuantite()
+        );
     }
 }

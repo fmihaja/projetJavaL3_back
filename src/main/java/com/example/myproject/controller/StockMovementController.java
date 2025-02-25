@@ -19,7 +19,7 @@ import com.example.myproject.model.StockMovement;
 import com.example.myproject.service.StockMovementServ;
 
 @RestController
-@RequestMapping("/api/stockmovements")
+@RequestMapping("/api/stockmovements/")
 public class StockMovementController {
 
     @Autowired
@@ -31,7 +31,7 @@ public class StockMovementController {
         return ResponseEntity.ok(new ApiResponse<>("Stock movements retrieved successfully", stockMovements));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<ApiResponse<StockMovement>> getStockMovementById(@PathVariable Long id) {
         Optional<StockMovement> stockMovement = stockMovementService.findById(id);
         if (stockMovement.isPresent()) {
@@ -47,7 +47,7 @@ public class StockMovementController {
         return ResponseEntity.status(201).body(new ApiResponse<>("Stock movement created successfully", savedStockMovement));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<ApiResponse<StockMovement>> updateStockMovement(@PathVariable Long id, @RequestBody StockMovement stockMovementDetails) {
         Optional<StockMovement> stockMovement = stockMovementService.findById(id);
         if (stockMovement.isPresent()) {
@@ -62,7 +62,7 @@ public class StockMovementController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<ApiResponse<Void>> deleteStockMovement(@PathVariable Long id) {
         if (stockMovementService.findById(id).isPresent()) {
             stockMovementService.deleteById(id);
