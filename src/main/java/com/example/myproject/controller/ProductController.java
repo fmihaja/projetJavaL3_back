@@ -14,57 +14,60 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.myproject.dto.ApiResponse;
 import com.example.myproject.model.Product;
 import com.example.myproject.service.ProductServ;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/products/")
 public class ProductController {
 
     @Autowired
     private ProductServ productService;
 
     @GetMapping
-    public List<Product> getAllProducts() {
-        return productService.findAll();
+    public ResponseEntity<ApiResponse<List<Product>>> getAllProducts() {
+        List<Product> products = productService.findAll();
+        return ResponseEntity.ok(new ApiResponse<>("Products retrieved successfully", products));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Product>> getProductById(@PathVariable Long id) {
         Optional<Product> product = productService.findById(id);
         if (product.isPresent()) {
-            return ResponseEntity.ok(product.get());
+            return ResponseEntity.ok(new ApiResponse<>("Product retrieved successfully", product.get()));
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(404).body(new ApiResponse<>("Product not found", null));
         }
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productService.save(product);
+    public ResponseEntity<ApiResponse<Product>> createProduct(@RequestBody Product product) {
+        Product savedProduct = productService.save(product);
+        return ResponseEntity.status(201).body(new ApiResponse<>("Product created successfully", savedProduct));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
+    public ResponseEntity<ApiResponse<Product>> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
         Optional<Product> product = productService.findById(id);
         if (product.isPresent()) {
             Product updatedProduct = product.get();
             updatedProduct.setName(productDetails.getName());
             updatedProduct.setPrice(productDetails.getPrice());
             updatedProduct.setQuantite(productDetails.getQuantite());
-            return ResponseEntity.ok(productService.save(updatedProduct));
+            return ResponseEntity.ok(new ApiResponse<>("Product updated successfully", productService.save(updatedProduct)));
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(404).body(new ApiResponse<>("Product not found", null));
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable Long id) {
         if (productService.findById(id).isPresent()) {
             productService.deleteById(id);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.status(204).body(new ApiResponse<>("Product deleted successfully", null));
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(404).body(new ApiResponse<>("Product not found", null));
         }
     }
 }
