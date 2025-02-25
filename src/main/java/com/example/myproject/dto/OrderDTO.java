@@ -1,5 +1,6 @@
 package com.example.myproject.dto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -9,9 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor 
 @AllArgsConstructor
-public class ClientDTO {
-    private String email;
-    private String name;
-    private String firstName;
-    private List<OrderDTO> orders; // Ajout de la liste des commandes
+public class OrderDTO {
+    private Long orderId;
+    private LocalDate orderDate;
+    private List<ArticleDTO> articles; // Ajout de la liste des articles
 }

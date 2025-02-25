@@ -1,7 +1,5 @@
 package com.example.myproject.dto;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,9 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor 
 @AllArgsConstructor
-public class ClientDTO {
-    private String email;
+public class ArticleDTO {
+    private Long id;
     private String name;
-    private String firstName;
-    private List<OrderDTO> orders; // Ajout de la liste des commandes
+    private Double price;
 }

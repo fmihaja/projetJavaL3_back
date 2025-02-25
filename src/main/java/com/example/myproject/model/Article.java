@@ -30,7 +30,7 @@ public class Article {
     private String name;
 
     @Column(nullable = false)
-    private Long prix;
+    private Long price;
 
     @ManyToMany(mappedBy = "articles", cascade = CascadeType.ALL)
     private List<Order> orders;

@@ -2,11 +2,16 @@ package com.example.myproject.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.example.myproject.dto.ArticleDTO;
 import com.example.myproject.dto.ClientDTO;
+import com.example.myproject.dto.OrderDTO;
+import com.example.myproject.model.Article;
 import com.example.myproject.model.Client;
 import com.example.myproject.repository.ClientRepo;
 
@@ -26,18 +31,15 @@ public class ClientServ {
         return null; // ou lancez une exception si le client n'existe pas
     }
 
+    @Transactional(readOnly = true)
     public List<ClientDTO> getAllClient() {
         List<Client> clients = clientRepo.findAll();
         return clients.stream()
                 .map(this::convertToDTO)
-                .toList();
+                .collect(Collectors.toList());
     }
 
-    private ClientDTO convertToDTO(Client client) {
-        // Ne touche pas à client.getOrders()
-        return new ClientDTO(client.getEmail(), client.getName(), client.getFirstName());
-    }
-
+    @Transactional(readOnly = true)
     public Optional<ClientDTO> findClient(String email) {
         Optional<Client> client = clientRepo.findById(email);
         return client.map(this::convertToDTO);
@@ -49,5 +51,18 @@ public class ClientServ {
             return true;
         }
         return false;
+    }
+
+    private ClientDTO convertToDTO(Client client) {
+        List<OrderDTO> orders = client.getOrders().stream()
+                .map(order -> new OrderDTO(order.getOrderId(), order.getOrderDate(), convertArticlesToDTO(order.getArticles())))
+                .collect(Collectors.toList());
+        return new ClientDTO(client.getEmail(), client.getName(), client.getFirstName(), orders);
+    }
+
+    private List<ArticleDTO> convertArticlesToDTO(List<Article> articles) {
+        return articles.stream()
+                .map(article -> new ArticleDTO(article.getArticleId(), article.getName(), article.getPrice().doubleValue()))
+                .collect(Collectors.toList());
     }
 }
