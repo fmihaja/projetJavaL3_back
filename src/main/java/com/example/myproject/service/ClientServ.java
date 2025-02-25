@@ -62,7 +62,7 @@ public class ClientServ {
 
     private List<ArticleDTO> convertArticlesToDTO(List<Article> articles) {
         return articles.stream()
-                .map(article -> new ArticleDTO(article.getArticleId(), article.getName(), article.getPrice().doubleValue()))
+                .map(article -> new ArticleDTO(article.getArticleId(), article.getName(), article.getPrice().doubleValue(), article.getQuantity()))
                 .collect(Collectors.toList());
     }
 }

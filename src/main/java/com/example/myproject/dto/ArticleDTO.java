@@ -11,4 +11,5 @@ public class ArticleDTO {
     private Long id;
     private String name;
     private Double price;
+    private Integer quantity;
 }

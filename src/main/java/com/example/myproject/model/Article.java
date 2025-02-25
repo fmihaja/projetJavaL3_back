@@ -28,6 +28,9 @@ public class Article {
 
     @Column(nullable = false, length = 100)
     private String name;
+    
+    @Column
+    private Integer quantity;
 
     @Column(nullable = false)
     private Long price;
