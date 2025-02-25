@@ -1,5 +1,6 @@
 package com.example.myproject.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -87,21 +88,28 @@ public class ProductController {
         }
     }
 
+
     private ProductDTO toProductDTO(Product product) {
-        // Force lazy loading of stockMovements
-        product.getStockMovements().size();
-        
-        List<StockMovementDTO> stockMovementDTOs = product.getStockMovements().stream()
-                .map(this::toStockMovementDTO)
-                .collect(Collectors.toList());
-        return new ProductDTO(
-            product.getId(),
-            product.getName(),
-            product.getPrice(),
-            product.getQuantite(),
-            stockMovementDTOs
-        );
+    // Ensure stockMovements is not null
+    List<StockMovement> stockMovements = product.getStockMovements();
+    if (stockMovements == null) {
+        stockMovements = new ArrayList<>();
     }
+
+    // Force lazy loading of stockMovements
+    stockMovements.size();
+    
+    List<StockMovementDTO> stockMovementDTOs = stockMovements.stream()
+            .map(this::toStockMovementDTO)
+            .collect(Collectors.toList());
+    return new ProductDTO(
+        product.getId(),
+        product.getName(),
+        product.getPrice(),
+        product.getQuantite(),
+        stockMovementDTOs
+    );
+}
 
     private StockMovementDTO toStockMovementDTO(StockMovement stockMovement) {
         return new StockMovementDTO(
